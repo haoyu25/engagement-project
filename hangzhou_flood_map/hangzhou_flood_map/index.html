@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>杭州中心城区内涝上报系统 | Hangzhou Inundation Reporting</title>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">💧</div>
+            <div class="logo-text">
+                杭州内涝上报系统
+                <span>Inundation Reporting</span>
+            </div>
+        </div>
+        <div class="header-stats">
+            <div class="stat-item">
+                <div class="stat-value" id="totalReports">0</div>
+                <div class="stat-label">上报总数 / Reports</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="todayReports">0</div>
+                <div class="stat-label">今日 / Today</div>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Map -->
+        <div id="map"></div>
+        
+        <!-- Layer Controls -->
+        <div class="layer-controls">
+            <div class="layer-title">图层 / Layers</div>
+            <div class="layer-item active" data-layer="roads">
+                <div class="layer-checkbox"></div>
+                <div class="layer-color" style="background: #666"></div>
+                <div class="layer-name">道路 Roads</div>
+            </div>
+            <div class="layer-item active" data-layer="water">
+                <div class="layer-checkbox"></div>
+                <div class="layer-color" style="background: #3498DB"></div>
+                <div class="layer-name">水体 Water</div>
+            </div>
+            <div class="layer-item active" data-layer="parks">
+                <div class="layer-checkbox"></div>
+                <div class="layer-color" style="background: #27AE60"></div>
+                <div class="layer-name">绿地 Parks</div>
+            </div>
+            <div class="layer-item active" data-layer="amenities">
+                <div class="layer-checkbox"></div>
+                <div class="layer-color" style="background: #E67E22"></div>
+                <div class="layer-name">设施 Amenities</div>
+            </div>
+            <div class="layer-item active" data-layer="metro">
+                <div class="layer-checkbox"></div>
+                <div class="layer-color" style="background: #9B59B6"></div>
+                <div class="layer-name">地铁站 Metro</div>
+            </div>
+            <div class="layer-item active" data-layer="floods">
+                <div class="layer-checkbox"></div>
+                <div class="layer-color" style="background: #E74C3C"></div>
+                <div class="layer-name">内涝点 Flood Reports</div>
+            </div>
+        </div>
+        
+        <!-- Filter Panel -->
+        <div class="filter-panel">
+            <div class="filter-title">筛选内涝上报 / Filter Reports</div>
+            <div class="filter-row">
+                <input type="date" class="filter-input" id="filterDateFrom" placeholder="From">
+                <input type="date" class="filter-input" id="filterDateTo" placeholder="To">
+            </div>
+            <div class="filter-chips">
+                <div class="filter-chip active" data-depth="all">全部 All</div>
+                <div class="filter-chip" data-depth="shallow">浅 &lt;10cm</div>
+                <div class="filter-chip" data-depth="moderate">中 10-30cm</div>
+                <div class="filter-chip" data-depth="deep">深 30-50cm</div>
+                <div class="filter-chip" data-depth="severe">严重 &gt;50cm</div>
+            </div>
+        </div>
+        
+        <!-- Language Toggle -->
+        <div class="lang-toggle">
+            <button class="lang-btn active" data-lang="zh">中文</button>
+            <button class="lang-btn" data-lang="en">EN</button>
+        </div>
+        
+        <!-- Side Panel -->
+        <div class="side-panel">
+            <div class="panel-header">
+                <div class="panel-title">上报内涝事件</div>
+                <div class="panel-subtitle">Report Inundation Event</div>
+            </div>
+            
+            <div class="panel-content">
+                <!-- Mode Selector -->
+                <div class="mode-selector">
+                    <button class="mode-btn active" data-mode="report">
+                        <div class="mode-icon">🌊</div>
+                        <div>上报内涝<br><small>Report Flood</small></div>
+                    </button>
+                    <button class="mode-btn" data-mode="view">
+                        <div class="mode-icon">📋</div>
+                        <div>查看记录<br><small>View Reports</small></div>
+                    </button>
+                </div>
+                
+                <!-- Report Form -->
+                <form id="reportForm">
+                    <!-- Location -->
+                    <div class="form-section">
+                        <label class="form-label">位置 Location (点击地图选择 / Click map)</label>
+                        <div class="location-display" id="locationDisplay">
+                            <div class="location-icon">📍</div>
+                            <div class="location-placeholder">请在地图上点击选择位置<br>Click on the map to select location</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Date and Time -->
+                    <div class="form-row">
+                        <div class="form-section">
+                            <label class="form-label">日期 Date</label>
+                            <input type="date" class="form-input" id="eventDate" required>
+                        </div>
+                        <div class="form-section">
+                            <label class="form-label">时间 Time</label>
+                            <input type="time" class="form-input" id="eventTime" required>
+                        </div>
+                    </div>
+                    
+                    <!-- Depth -->
+                    <div class="form-section">
+                        <label class="form-label">积水深度 Water Depth</label>
+                        <div class="depth-options">
+                            <div class="depth-option" data-depth="shallow">
+                                <div class="depth-value">&lt;10cm</div>
+                                <div class="depth-label">浅 Shallow</div>
+                            </div>
+                            <div class="depth-option" data-depth="moderate">
+                                <div class="depth-value">10-30cm</div>
+                                <div class="depth-label">中 Moderate</div>
+                            </div>
+                            <div class="depth-option" data-depth="deep">
+                                <div class="depth-value">30-50cm</div>
+                                <div class="depth-label">深 Deep</div>
+                            </div>
+                            <div class="depth-option" data-depth="severe">
+                                <div class="depth-value">&gt;50cm</div>
+                                <div class="depth-label">严重 Severe</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Situation Type -->
+                    <div class="form-section">
+                        <label class="form-label">情况类型 Situation Type</label>
+                        <div class="situation-options">
+                            <div class="situation-chip" data-situation="home">家附近 Near Home</div>
+                            <div class="situation-chip" data-situation="commute">通勤路上 Commuting</div>
+                            <div class="situation-chip" data-situation="work">工作地点 Workplace</div>
+                            <div class="situation-chip" data-situation="other">其他 Other</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Location Description -->
+                    <div class="form-section">
+                        <label class="form-label">详细位置描述 Location Details</label>
+                        <textarea class="form-textarea" id="locationDesc" placeholder="如：XX路与XX路交叉口 / e.g., Intersection of XX Road and XX Street"></textarea>
+                    </div>
+                    
+                    <!-- Photo Upload -->
+                    <div class="form-section">
+                        <label class="form-label">上传照片 Upload Photo (可选 Optional)</label>
+                        <div class="photo-upload" id="photoUpload">
+                            <div class="photo-upload-icon">📷</div>
+                            <div class="photo-upload-text">点击或拖拽上传照片<br>Click or drag to upload</div>
+                        </div>
+                        <input type="file" id="photoInput" accept="image/*">
+                    </div>
+                    
+                    <button type="submit" class="submit-btn" id="submitBtn" disabled>
+                        提交上报 Submit Report
+                    </button>
+                </form>
+                
+                <!-- Report List (hidden by default) -->
+                <div class="report-list" id="reportList" style="display: none;">
+                    <div class="report-list-title">历史上报记录 / Report History</div>
+                    <div id="reportItems"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Instructions Overlay -->
+    <div class="instructions-overlay" id="instructions">
+        <div class="instructions-icon">👆</div>
+        <div class="instructions-text">点击地图选择内涝位置 / Click on the map to select flood location</div>
+        <button class="instructions-close" id="closeInstructions">×</button>
+    </div>
+    
+    <!-- Toast -->
+    <div class="toast" id="toast">
+        <span>✓</span>
+        <span>上报成功！Thank you for your report!</span>
+    </div>
+    
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <!-- Application JS -->
+    <script src="app.js"></script>
+</body>
+</html>
