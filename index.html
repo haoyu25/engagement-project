@@ -76,6 +76,11 @@
                 <div class="layer-color" style="background: #E74C3C"></div>
                 <div class="layer-name">内涝点 Flood Reports</div>
             </div>
+            <div class="layer-item active" data-layer="heatmap">
+                <div class="layer-checkbox"></div>
+                <div class="layer-color" style="background: linear-gradient(90deg, blue, cyan, lime, yellow, orange, red)"></div>
+                <div class="layer-name">热力图 Heatmap</div>
+            </div>
         </div>
         
         <!-- Filter Panel -->
@@ -182,17 +187,7 @@
                         <label class="form-label">详细位置描述 Location Details</label>
                         <textarea class="form-textarea" id="locationDesc" placeholder="如：XX路与XX路交叉口 / e.g., Intersection of XX Road and XX Street"></textarea>
                     </div>
-                    
-                    <!-- Photo Upload -->
-                    <div class="form-section">
-                        <label class="form-label">上传照片 Upload Photo (可选 Optional)</label>
-                        <div class="photo-upload" id="photoUpload">
-                            <div class="photo-upload-icon">📷</div>
-                            <div class="photo-upload-text">点击或拖拽上传照片<br>Click or drag to upload</div>
-                        </div>
-                        <input type="file" id="photoInput" accept="image/*">
-                    </div>
-                    
+
                     <button type="submit" class="submit-btn" id="submitBtn" disabled>
                         提交上报 Submit Report
                     </button>
@@ -222,8 +217,9 @@
     
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
     
     <!-- Application JS -->
-    <script src="app.js"></script>
+    <script type="module" src="js/app.js"></script>
 </body>
 </html>

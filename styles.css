@@ -325,51 +325,6 @@ body {
 }
 
 /* ========================================
-   Photo Upload
-   ======================================== */
-.photo-upload {
-    border: 2px dashed var(--border-color);
-    border-radius: 12px;
-    padding: 24px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    background: var(--bg-card);
-}
-
-.photo-upload:hover {
-    border-color: var(--accent-cyan);
-    background: rgba(0, 165, 214, 0.05);
-}
-
-.photo-upload.has-image {
-    padding: 8px;
-    border-style: solid;
-    border-color: var(--success-green);
-}
-
-.photo-upload-icon {
-    font-size: 32px;
-    margin-bottom: 8px;
-    opacity: 0.6;
-}
-
-.photo-upload-text {
-    font-size: 13px;
-    color: var(--text-secondary);
-}
-
-.photo-preview {
-    max-width: 100%;
-    max-height: 150px;
-    border-radius: 8px;
-}
-
-#photoInput {
-    display: none;
-}
-
-/* ========================================
    Location Display
    ======================================== */
 .location-display {
