@@ -34,6 +34,7 @@ export function initializeHeatmap(map, floodReports) {
     },
   }).addTo(map);
 
+  heatLayer._canvas.getContext('2d', { willReadFrequently: true });
   console.log('Heatmap initialized with', floodReports.length, 'points');
 }
 
