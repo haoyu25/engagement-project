@@ -50,3 +50,14 @@ An interactive web-based system designed for **residents of Hangzhou’s central
 
 - Residents: to report real-time flooding events.
 - City Planners & Emergency Managers: to use community-sourced data for urban planning, flood mitigation, and emergency response.
+
+## Data Sources
+
+- **Inundation Risk Index:** From one of the author's projects: [Hangzhou Flooding Risk Detection](https://github.com/haoyu25/Hangzhou-Flooding-Risk-Detect)  
+- **Amenity and Station POIs:** GaoDe Open Platform ([高德开放平台](https://lbs.amap.com/))
+
+## Team Contributions
+
+- **Annie**: Web page framework setup.
+- **Haoyu**: Data collection and processing, Firebase integration, heatmap implementation.
+- **Meixi**: Accessibility features and visual optimization.
